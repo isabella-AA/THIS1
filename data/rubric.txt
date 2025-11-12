@@ -1,0 +1,48 @@
+TRUST_RUBRIC = 
+"""
+Trust Level Rubric for Charity Fundraising Articles
+Definition:
+Trust = credibility, transparency, and reliability of the charity fundraising content.
+
+Scoring Criteria (1–5):
+
+Level 5 – Very High Trust:
+- Complete organizational details (name, registration ID, contact)
+- Specific financial disclosures and clear fund allocation
+- Concrete impact data with measurable outcomes
+- Professional, factual tone without manipulation
+- Clear accountability and reporting mechanisms
+- External verification or third-party validation present
+
+Level 4 – High Trust:
+- Most key organizational information provided
+- General financial transparency with some details
+- Some specific examples or supporting data
+- Balanced and professional communication
+- Basic accountability mentioned
+- Limited external validation
+
+Level 3 – Moderate Trust:
+- Basic organization information only
+- Vague or incomplete financial details
+- General claims without supporting data
+- Mixed factual and emotional content
+- Unclear accountability
+- No external verification
+
+Level 2 – Low Trust:
+- Missing key organization details
+- No financial information
+- Unsubstantiated or exaggerated claims
+- Heavy emotional manipulation or pressure tactics
+- No accountability or reporting information
+- Suspicious inconsistencies present
+
+Level 1 – No Trust:
+- Critical information hidden or falsified
+- No verifiable organization details
+- False or impossible claims
+- Exploitative emotional manipulation
+- No contact or tracking method
+- Clear indicators of fraud or deception
+"""

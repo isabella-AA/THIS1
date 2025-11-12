@@ -1,0 +1,6 @@
+pyyaml
+pandas
+numpy
+requests
+zhipuai
+python-dotenv
