@@ -1,11 +1,11 @@
 """
-Class-based refactor for "LLM-Based Emotion Scoring (Scheme A: Debate→Converge)"
+Class-based refactor for "LLM-Based Emotion Scoring (Debate→Converge)
 
-This module is used to rate the emotion of each passage from the content only
+This module is used to rate the emotion
 - Integer scale 1–5 only
 - Convergence if |S1 − S2| ≤ epsilon (default 1)
 - Up to R debate rounds (default 3)
-- Each model outputs S⁻, S, S⁺ and a brief reason (no fabrication)
+- Each model outputs S⁻, S, S⁺ and a brief reason no fabrication
 - Final output per (id, emotion): {id, emotion, score_range:[L, U], converged: bool}
 """
 from __future__ import annotations
