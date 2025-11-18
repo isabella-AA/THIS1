@@ -22,6 +22,8 @@ import yaml
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
+from tqdm import tqdm
+import time
 
 # Configuration
 
@@ -48,14 +50,7 @@ class RunConfig:
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any]) -> "RunConfig":
-
-        
-        import dataclasses
-        field_names = {f.name for f in dataclasses.fields(cls)}
-        
-        kwargs = {k: v for k, v in d.items() if k in field_names}
-        
-        return cls(**kwargs)
+        return cls(**d)
 
     @classmethod
     def from_yaml(cls, path: str) -> "RunConfig":
@@ -192,7 +187,7 @@ REVIEW_PROMPT = (
 class DebateResult:
     id: str
     emotion: str
-    score_range: List[int]  # [L,U]
+    score:float
     converged: bool
 
 
@@ -228,7 +223,9 @@ class DebateEngine:
         out2 = self._score_once(self.c2, article, emotion, rubric, seed=seed_base + 1)
         s1, s2 = out1["S"], out2["S"]
         if self._is_converged(s1, s2):
-            return DebateResult(id="", emotion=emotion, score_range=[min(s1, s2), max(s1, s2)], converged=True)
+            avg_score = (s1 + s2) / 2
+            return DebateResult(id="", emotion=emotion, score=float(avg_score), converged=True)
+
 
         # Rounds 2..R
         for r in range(2, int(self.cfg.R) + 1):
@@ -236,9 +233,11 @@ class DebateEngine:
             out2 = self._revise(self.c2, article, emotion, rubric, other=out1, seed=seed_base + 10 * r + 1)
             s1, s2 = out1["S"], out2["S"]
             if self._is_converged(s1, s2):
-                return DebateResult(id="", emotion=emotion, score_range=[min(s1, s2), max(s1, s2)], converged=True)
+                avg_score = (s1 + s2) / 2
+                return DebateResult(id="", emotion=emotion, score=float(avg_score), converged=True)
 
-        return DebateResult(id="", emotion=emotion, score_range=[min(s1, s2), max(s1, s2)], converged=False)
+
+        return DebateResult(id="", emotion=emotion, score = float(0), converged=False)
 
 # I/O utilities
 
@@ -248,6 +247,9 @@ def read_rows(in_path: Path) -> List[Dict[str, Any]]:
         with open(in_path, "r", encoding="utf-8") as f:
             return json.load(f)
     elif in_path.suffix == ".jsonl":
+        print(f"DEBUG: in_path = {in_path}")
+        print(f"DEBUG: in_path.suffix = {in_path.suffix}")
+        print(f"DEBUG: type(in_path) = {type(in_path)}")
         rows = []
         with open(in_path, "r", encoding="utf-8") as f:
             for line in f:
@@ -256,6 +258,7 @@ def read_rows(in_path: Path) -> List[Dict[str, Any]]:
         return rows
     else:
         raise ValueError(f"Unsupported input format: {in_path.suffix}")
+        
 
 def write_jsonl(path: Path, records: Iterable[Dict[str, Any]]) -> None:
     with open(path, "w", encoding="utf-8") as f:
@@ -309,24 +312,26 @@ class ScoringPipeline:
                 pass
             return self.cfg.emotions or []
 
-    def run(self, rows: List[Dict[str, Any]], rubrics: Dict[str, str], override_emotions: Optional[List[str]] = None) -> List[Dict[str, Any]]:
-        outputs: List[Dict[str, Any]] = []
-        for i, row in enumerate(rows):
+    def run(self, rows, rubrics, override_emotions=None):
+        outputs = []
+        for i, row in tqdm(enumerate(rows), 
+                           total=len(rows),
+                           desc="Scoring articles",
+                           ncols=100):
+
             rid = str(row.get("id", i))
             article = str(row.get("text", ""))
             emotions = self._resolve_emotions(row, override_emotions)
+            
             for emo in emotions:
                 rubric = rubrics.get(emo, rubrics.get("*", "Rate on the 1–5 integer scale."))
-                res = self.engine.run_pair(article, emo, rubric, seed_base=101 + i)
-                outputs.append({
-                    "id": rid,
-                    "emotion": emo,
-                    "score_range": res.score_range,
-                    "converged": res.converged,
-                })
+                res = self.engine.run_pair(article,emo,rubric,seed_base=101 + i)
+                outputs.append({"id": rid,"emotion": emo,"score": res.score,"converged": res.converged,})
                 time.sleep(float(self.cfg.cooldown))
+
         return outputs
 
+        
 
 # CLI
 
@@ -352,15 +357,21 @@ def build_argparser() -> argparse.ArgumentParser:
 
 
 def main(argv: Optional[List[str]] = None) -> int:
+    print("=== Starting LLM Labeler ===")
     args = build_argparser().parse_args(argv)
     cfg = RunConfig.from_yaml(args.config_yaml) if args.config_yaml else RunConfig() 
-    
+    print(f"Config file: {args.config_yaml}")
+    print(f"Config loaded successfully")
+    print(f"Creating clients...")
     c1 = make_client(cfg.provider1, cfg.model1, cfg.temperature)
     c2 = make_client(cfg.provider2, cfg.model2, cfg.temperature)
     engine = DebateEngine(cfg, c1, c2)
-    
+    print(f"Clients created")
     in_path = Path(cfg.input)
     out_path = Path(cfg.output)
+    print(f"DEBUG: in_path = {in_path}")
+    print(f"DEBUG: in_path.suffix = {in_path.suffix}")
+    print(f"DEBUG: type(in_path) = {type(in_path)}")
     rows = read_rows(in_path) 
     
     # emotions override
@@ -377,6 +388,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     # pipeline
     pipeline = ScoringPipeline(cfg, engine)
     outputs = pipeline.run(rows, rubrics_map, override_emotions or cfg.emotions)
+
 
     # write
     out_path.parent.mkdir(parents=True, exist_ok=True)

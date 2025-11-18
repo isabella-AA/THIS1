@@ -1,48 +1,129 @@
-TRUST_RUBRIC = 
+可信度感知 = 
 """
-Trust Level Rubric for Charity Fundraising Articles
-Definition:
-Trust = credibility, transparency, and reliability of the charity fundraising content.
+可信度感知（Trust）评分标准  
+用于评估筹款文本的可信度、透明度和可靠程度。  
+请根据文章内容，对其可信度从 1–5 打分。
 
-Scoring Criteria (1–5):
+评分等级说明（1 = 极低可信度，5 = 极高可信度）
 
-Level 5 – Very High Trust:
-- Complete organizational details (name, registration ID, contact)
-- Specific financial disclosures and clear fund allocation
-- Concrete impact data with measurable outcomes
-- Professional, factual tone without manipulation
-- Clear accountability and reporting mechanisms
-- External verification or third-party validation present
+【5 分：可信度极高】
+- 核心信息齐全：清晰列出求助对象、身份、机构或医生信息等可验证字段  
+- 资金用途明确：详细说明每一部分资金将如何使用  
+- 提供证据：包含医学诊断、收费记录、进展证明、时间线等可核查材料  
+- 信息一致性强：叙述逻辑清晰，无矛盾或遗漏  
+- 叙述风格专业、客观，无过度煽情  
+- 若为机构发起，责任链条清楚，有持续公开更新与监督方式
 
-Level 4 – High Trust:
-- Most key organizational information provided
-- General financial transparency with some details
-- Some specific examples or supporting data
-- Balanced and professional communication
-- Basic accountability mentioned
-- Limited external validation
+【4 分：可信度较高】
+- 基本身份信息完整  
+- 资金用途总体清晰但缺乏部分细节  
+- 有一定的支持性证据（如部分病历/截图）  
+- 整体叙述较为客观，偶有情绪性表达  
+- 没有发现明显矛盾点，但验证材料有限
 
-Level 3 – Moderate Trust:
-- Basic organization information only
-- Vague or incomplete financial details
-- General claims without supporting data
-- Mixed factual and emotional content
-- Unclear accountability
-- No external verification
+【3 分：可信度一般】
+- 信息有基本框架但缺少关键细节，例如身份模糊或证据不足  
+- 资金用途描述较笼统  
+- 支持性材料缺失或较少  
+- 情绪与事实交织明显  
+- 故事可信但无法完全确认真实性
 
-Level 2 – Low Trust:
-- Missing key organization details
-- No financial information
-- Unsubstantiated or exaggerated claims
-- Heavy emotional manipulation or pressure tactics
-- No accountability or reporting information
-- Suspicious inconsistencies present
+【2 分：可信度偏低】
+- 关键信息缺失，如求助者身份不清晰、医疗情况含糊  
+- 资金用途模糊，不解释为什么需要该金额  
+- 主要依靠情绪叙述，没有证据支撑  
+- 存在逻辑跳跃或前后不一致  
+- 整体让人难以判断其真实性
 
-Level 1 – No Trust:
-- Critical information hidden or falsified
-- No verifiable organization details
-- False or impossible claims
-- Exploitative emotional manipulation
-- No contact or tracking method
-- Clear indicators of fraud or deception
+【1 分：可信度极低】
+- 核心信息严重缺失或明显可疑  
+- 自相矛盾、金额不合逻辑或叙述不可能  
+- 没有任何可以验证的内容  
+- 过度戏剧化或强烈煽动性表达  
+- 疑似诈骗、虚构故事、恶意捏造或恶意隐瞒关键事实
+"""
+
+
+
+
+共情关怀 = 
+"""
+共情关怀（Empathic Concern）评分标准  
+评估读者在阅读求助文本时，可能产生的情绪共鸣、理解、同情与关怀的程度。  
+请根据文章内容，从 1–5 分打分。
+
+评分等级说明：
+
+【5 分：强烈共情】
+- 求助者的痛苦、处境、无助等描写非常具体、生动  
+- 情节呈现明显的情感冲击力，使读者容易代入  
+- 困境具有人性化细节（如家庭责任、孩子、老人等）  
+- 情绪表达真实而节制，不夸张但极具感染力  
+- 高度唤起关心、怜悯和帮助欲望
+
+【4 分：较强共情】
+- 清晰描述了痛苦与困境，有一定情感张力  
+- 有让人理解并同情的情节或个人故事  
+- 部分细节能促进代入感  
+- 总体情绪自然、可信  
+- 能明显引发关怀情绪
+
+【3 分：中等共情】
+- 描述了困难，但情节不够深入  
+- 情绪表达较为平淡或模板化  
+- 缺乏具体细节，代入感一般  
+- 能够理解其处境，但情感触发不强烈
+
+【2 分：较弱共情】
+- 描述主要以客观事实为主，缺少情绪或细节  
+- 求助者的个体性不明显，故事较为疏离  
+- 难以引起读者内在情感反应  
+- 文本显得机械或缺乏温度
+
+【1 分：无明显共情】
+- 叙述冷漠或仅包含抽象信息  
+- 完全缺少人物、情绪、处境描写  
+- 难以理解求助者的情绪状态  
+- 读者不会产生关怀或情绪反应
+"""
+
+值得性感知 = 
+"""
+值得性感知（Deservingness）评分标准  
+评估读者是否认为求助者“应该”或“值得”获得援助。  
+请根据文章内容，从 1–5 分打分。
+
+评分等级说明：
+
+【5 分：高度值得帮助】
+- 困境由不可控因素导致（突发疾病、意外事故等）  
+- 求助者展现出高度责任感（照顾家庭、自我努力维持生活）  
+- 明显非自我过错，不存在逃避责任的迹象  
+- 有长期坚持、积极求生意愿或努力经历  
+- 文本提供充分理由解释“为什么需要公众帮助”  
+- 能强烈激发“应当帮助他/他们”的评价
+
+【4 分：较高值得性】
+- 困境主要并非其自身造成  
+- 文中展现出一定程度的努力、责任心或积极行为  
+- 有合理诉求与合理的资金需求解释  
+- 整体呈现的道德形象正面
+
+【3 分：中等值得性】
+- 求助情况存在一定正当性，但细节不足  
+- 努力与责任的表述不明确  
+- 困境原因不够清晰  
+- 对其需要帮助的理由理解但不强烈
+
+【2 分：较低值得性】
+- 困境是否由自身过错导致不清晰  
+- 缺乏努力、责任或正当性的信息  
+- 资金诉求模糊，理由较弱  
+- 读者可能会质疑是否“真的需要公众帮助”
+
+【1 分：明显不值得帮助】
+- 文本暗示或直述求助者存在过错、过度依赖、逃避责任等  
+- 资金用途不清、动机可疑  
+- 缺乏任何责任心或努力表现  
+- 读者容易产生“这是他自己的问题”“不应该由公众承担”等感受
 """

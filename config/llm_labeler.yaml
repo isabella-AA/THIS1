@@ -1,7 +1,7 @@
 provider1: zhipuai
-model1: glm-4-airx
+model1: GLM-4-Flash 
 provider2: zhipuai
-model2: glm-4-flash
+model2: GLM-4-FlashX-250414
 
 temperature: 0.2
 R: 3
@@ -11,4 +11,4 @@ cooldown: 0.6
 input: data/input_articles.jsonl
 output: data/llm_scored_trust.jsonl
 rubrics: data/rubric.txt
-emotions: ["Trust"]
+emotions: ["可信度感知",'共情关怀','值得性感知']
